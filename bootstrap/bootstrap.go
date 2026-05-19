@@ -63,5 +63,10 @@ func Start() error {
 	menuUsecase := usecase.NewMenuUsecase(menuRepo)
 	rest.NewMenuHandler(v1, menuUsecase)
 
-	return app.Listen(fmt.Sprintf(":%d", config.AppPort))
+	port := env.GetEnv("PORT")
+	if port == "" {
+		port = fmt.Sprintf("%d", config.AppPort)
+	}
+
+	return app.Listen("0.0.0.0:" + port)
 }

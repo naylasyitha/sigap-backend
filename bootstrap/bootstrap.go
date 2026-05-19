@@ -11,7 +11,8 @@ import (
 	"sigap-backend/infra/env"
 
 	"github.com/gofiber/fiber/v2"
-	// "github.com/gofiber/fiber/v2/middleware/cors"
+	"github.com/gofiber/fiber/v2/middleware/cors"
+
 	// "github.com/gofiber/fiber/v2/middleware/logger"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -50,8 +51,11 @@ func Start() error {
 	}
 
 	app := fiber.New()
-	// app.Use(logger.New())
-	// app.Use(cors.New())
+	app.Use(cors.New(cors.Config{
+		AllowOrigins: "*",
+		AllowHeaders: "Origin, Content-Type, Accept, Authorization",
+		AllowMethods: "GET, POST, PUT, DELETE, OPTIONS",
+	}))
 
 	v1 := app.Group("/api/v1")
 

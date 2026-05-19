@@ -54,10 +54,9 @@ type MenuResponse struct {
 }
 
 type IngredientResponse struct {
-	ID      uuid.UUID `json:"id"`
-	Name    string    `json:"name"`
-	Amount  string    `json:"amount"`
-	IconURL string    `json:"icon_url"`
+	ID     uuid.UUID `json:"id"`
+	Name   string    `json:"name"`
+	Amount string    `json:"amount"`
 }
 
 type StepResponse struct {
@@ -65,7 +64,6 @@ type StepResponse struct {
 	StepNumber  int       `json:"step_number"`
 	Title       string    `json:"title"`
 	Description string    `json:"description"`
-	Duration    string    `json:"duration"`
 }
 
 type NutritionResponse struct {

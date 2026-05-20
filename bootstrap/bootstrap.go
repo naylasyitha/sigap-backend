@@ -14,7 +14,7 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/cors"
 
 	// "github.com/gofiber/fiber/v2/middleware/logger"
-	"gorm.io/driver/mysql"
+	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
@@ -24,16 +24,9 @@ func Start() error {
 		panic(err)
 	}
 
-	dsn := fmt.Sprintf(
-		"%s:%s@tcp(%s:%d)/%s?charset=utf8mb4&parseTime=True&loc=Local",
-		config.DBUsername,
-		config.DBPassword,
-		config.DBHost,
-		config.DBPort,
-		config.DBName,
-	)
+	dsn := "postgresql://postgres:JIqS2396yjVadOMO@db.cqkbmsyommfthtxbwswq.supabase.co:5432/postgres"
 
-	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
+	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		panic(err)
 	}

@@ -44,6 +44,9 @@ func Start() error {
 		&entity.MpasiIngredient{},
 		&entity.MpasiStep{},
 		&entity.MpasiNutrition{},
+		&entity.Child{},
+		&entity.Schedule{},
+		&entity.GrowthRecord{},
 	)
 
 	if err != nil {
@@ -67,6 +70,18 @@ func Start() error {
 	menuRepo := repository.NewMenuRepository(db)
 	menuUsecase := usecase.NewMenuUsecase(menuRepo)
 	rest.NewMenuHandler(v1, menuUsecase)
+
+	childRepo := repository.NewChildRepository(db)
+	childUsecase := usecase.NewChildUsecase(childRepo)
+	rest.NewChildHandler(v1, childUsecase)
+
+	scheduleRepo := repository.NewScheduleRepository(db)
+	scheduleUsecase := usecase.NewScheduleUsecase(scheduleRepo, childRepo)
+	rest.NewScheduleHandler(v1, scheduleUsecase)
+
+	growthRepo := repository.NewGrowthRecordRepository(db)
+	growthUsecase := usecase.NewGrowthRecordUsecase(growthRepo, childRepo)
+	rest.NewGrowthRecordHandler(v1, growthUsecase)
 
 	port := env.GetEnv("PORT")
 	if port == "" {

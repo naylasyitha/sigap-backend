@@ -29,6 +29,7 @@ type Schedule struct {
 	Type         ScheduleType   `gorm:"type:varchar(50);not null" json:"type"`
 	Status       ScheduleStatus `gorm:"type:varchar(50);not null" json:"status"`
 	ScheduleDate time.Time      `gorm:"not null" json:"schedule_date"`
+	Location     string         `gorm:"type:varchar(150)" json:"location"`
 	CreatedAt    time.Time      `json:"created_at"`
 	UpdatedAt    time.Time      `json:"updated_at"`
 

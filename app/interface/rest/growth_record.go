@@ -16,7 +16,7 @@ type GrowthRecordHandler struct {
 	validate *validator.Validate
 }
 
-func NewGrowthRecordHandler(routerGroup fiber.Router, growthUsecase usecase.GrowthRecordUsecase) {
+func NewGrowthRecordHandler(routerGroup fiber.Router, growthUsecase usecase.GrowthRecordUsecase, mid fiber.Handler) {
 	handler := GrowthRecordHandler{
 		usecase:  growthUsecase,
 		validate: validator.New(),
@@ -24,9 +24,9 @@ func NewGrowthRecordHandler(routerGroup fiber.Router, growthUsecase usecase.Grow
 
 	growth := routerGroup.Group("/growth-records")
 
-	growth.Post("/", handler.Create)
-	growth.Get("/child/:child_id", handler.FindAllByChildID)
-	growth.Get("/child/:child_id/latest", handler.GetLatestByChildID)
+	growth.Post("/", mid, handler.Create)
+	growth.Get("/child/:child_id", mid, handler.FindAllByChildID)
+	growth.Get("/child/:child_id/latest", mid, handler.GetLatestByChildID)
 }
 
 func (h *GrowthRecordHandler) Create(ctx *fiber.Ctx) error {

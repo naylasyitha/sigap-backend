@@ -5,7 +5,6 @@ import (
 
 	"sigap-backend/app/usecase"
 	"sigap-backend/domain/dto"
-	"sigap-backend/middleware"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
@@ -17,7 +16,7 @@ type ChildHandler struct {
 	validate *validator.Validate
 }
 
-func NewChildHandler(routerGroup fiber.Router, childUsecase usecase.ChildUsecase) {
+func NewChildHandler(routerGroup fiber.Router, childUsecase usecase.ChildUsecase, mid fiber.Handler) {
 	handler := ChildHandler{
 		usecase:  childUsecase,
 		validate: validator.New(),
@@ -25,10 +24,10 @@ func NewChildHandler(routerGroup fiber.Router, childUsecase usecase.ChildUsecase
 
 	child := routerGroup.Group("/children")
 
-	child.Post("/", middleware.AuthMiddleware, handler.Create)
-	child.Get("/", middleware.AuthMiddleware, handler.FindAll)
-	child.Patch("/:id", middleware.AuthMiddleware, handler.Update)
-	child.Delete("/:id", middleware.AuthMiddleware, handler.Delete)
+	child.Post("/", mid, handler.Create)
+	child.Get("/", mid, handler.FindAll)
+	child.Patch("/:id", mid, handler.Update)
+	child.Delete("/:id", mid, handler.Delete)
 }
 
 func (h *ChildHandler) Create(ctx *fiber.Ctx) error {

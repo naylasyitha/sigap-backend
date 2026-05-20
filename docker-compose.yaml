@@ -1,0 +1,27 @@
+services:
+  app:
+    build: .
+    container_name: paw-sigap
+    restart: always
+    env_file:
+      - .env
+    ports:
+      - "8085:${APP_PORT}"
+    networks:
+      - maria_network
+
+  nginx:
+    image: nginx:alpine
+    container_name: sigap-nginx
+    restart: always
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - app
+
+networks:
+  maria_network:
+    external: true
+

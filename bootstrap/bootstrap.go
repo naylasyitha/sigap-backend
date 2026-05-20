@@ -9,12 +9,13 @@ import (
 	"sigap-backend/app/usecase"
 	"sigap-backend/domain/entity"
 	"sigap-backend/infra/env"
+	"sigap-backend/middleware"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 
 	// "github.com/gofiber/fiber/v2/middleware/logger"
-	"gorm.io/driver/postgres"
+	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
 
@@ -24,9 +25,16 @@ func Start() error {
 		panic(err)
 	}
 
-	dsn := "postgresql://postgres:JIqS2396yjVadOMO@db.cqkbmsyommfthtxbwswq.supabase.co:5432/postgres"
+	dsn := fmt.Sprintf(
+		"%s:%s@tcp(%s:%d)/%s?charset=utf8mb4&parseTime=True&loc=Local",
+		config.DBUsername,
+		config.DBPassword,
+		config.DBHost,
+		config.DBPort,
+		config.DBName,
+	)
 
-	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
 		panic(err)
 	}
@@ -66,15 +74,15 @@ func Start() error {
 
 	childRepo := repository.NewChildRepository(db)
 	childUsecase := usecase.NewChildUsecase(childRepo)
-	rest.NewChildHandler(v1, childUsecase)
+	rest.NewChildHandler(v1, childUsecase, middleware.AuthMiddleware)
 
 	scheduleRepo := repository.NewScheduleRepository(db)
 	scheduleUsecase := usecase.NewScheduleUsecase(scheduleRepo, childRepo)
-	rest.NewScheduleHandler(v1, scheduleUsecase)
+	rest.NewScheduleHandler(v1, scheduleUsecase, middleware.AuthMiddleware)
 
 	growthRepo := repository.NewGrowthRecordRepository(db)
 	growthUsecase := usecase.NewGrowthRecordUsecase(growthRepo, childRepo)
-	rest.NewGrowthRecordHandler(v1, growthUsecase)
+	rest.NewGrowthRecordHandler(v1, growthUsecase, middleware.AuthMiddleware)
 
 	port := env.GetEnv("PORT")
 	if port == "" {

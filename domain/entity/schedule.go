@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"gorm.io/gorm"
 )
 
 type ScheduleType string
@@ -34,4 +35,9 @@ type Schedule struct {
 	UpdatedAt    time.Time      `json:"updated_at"`
 
 	Child Child `gorm:"foreignKey:ChildID" json:"child,omitempty"`
+}
+
+func (s *Schedule) BeforeCreate(tx *gorm.DB) error {
+	s.ID = uuid.New()
+	return nil
 }

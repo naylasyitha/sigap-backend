@@ -1,6 +1,7 @@
 package rest
 
 import (
+	"errors"
 	"net/http"
 
 	"sigap-backend/app/usecase"
@@ -8,7 +9,6 @@ import (
 
 	"github.com/go-playground/validator/v10"
 	"github.com/gofiber/fiber/v2"
-	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
 )
 
@@ -17,24 +17,27 @@ type ScheduleHandler struct {
 	validate *validator.Validate
 }
 
-func NewScheduleHandler(routerGroup fiber.Router, scheduleUsecase usecase.ScheduleUsecase) {
+func NewScheduleHandler(routerGroup fiber.Router, scheduleUsecase usecase.ScheduleUsecase, mid fiber.Handler) {
 	handler := ScheduleHandler{
 		usecase:  scheduleUsecase,
 		validate: validator.New(),
 	}
 
 	schedule := routerGroup.Group("/schedules")
-	schedule.Post("/", handler.Create)
-	schedule.Get("/", handler.FindAll)
-	schedule.Get("/child/:child_id", handler.FindAllByChildID)
-	schedule.Get("/:id", handler.FindByID)
-	schedule.Put("/:id", handler.Update)
-	schedule.Delete("/:id", handler.Delete)
+	schedule.Post("/", mid, handler.Create)
+	schedule.Get("/", mid, handler.FindAll)
+	schedule.Get("/child/:child_id", mid, handler.FindAllByChildID)
+	schedule.Get("/:id", mid, handler.FindByID)
+	schedule.Put("/:id", mid, handler.Update)
+	schedule.Delete("/:id", mid, handler.Delete)
 }
 
 func getUserID(ctx *fiber.Ctx) (uuid.UUID, error) {
-	claims := ctx.Locals("user").(jwt.MapClaims)
-	return uuid.Parse(claims["user_id"].(string))
+	userID, ok := ctx.Locals("user_id").(uuid.UUID)
+	if !ok {
+		return uuid.Nil, errors.New("unauthorized")
+	}
+	return userID, nil
 }
 
 func (h *ScheduleHandler) Create(ctx *fiber.Ctx) error {

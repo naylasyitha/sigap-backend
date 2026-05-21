@@ -7,8 +7,6 @@ services:
       - .env
     ports:
       - "8085:${APP_PORT}"
-    networks:
-      - maria_network
 
   nginx:
     image: nginx:alpine
@@ -20,8 +18,4 @@ services:
       - ./nginx.conf:/etc/nginx/conf.d/default.conf
     depends_on:
       - app
-
-networks:
-  maria_network:
-    external: true
 

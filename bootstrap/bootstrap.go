@@ -58,7 +58,7 @@ func Start() error {
 	}
 
 	app := fiber.New()
-	app.Static("/assets", "./assets")
+	app.Static("/assets", "/app/assets")
 	app.Use(cors.New(cors.Config{
 		AllowOrigins: "*",
 		AllowHeaders: "Origin, Content-Type, Accept, Authorization",
